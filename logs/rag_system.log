@@ -8386,3 +8386,210 @@ requests.exceptions.HTTPError: 402 Client Error: Payment Required for url: https
 === APPLICATION SHUTDOWN ===
 2025-10-31 22:32:39 - src.config - INFO - Gracefully shutting down...
 2025-10-31 22:32:39 - src.config - INFO - === SHUTDOWN COMPLETE ===
+2025-10-31 22:32:42 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 22:32:42 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 22:32:42 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 22:32:42 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 22:32:50 - src.config - INFO - PDFProcessor initialized
+2025-10-31 22:32:50 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 22:32:56 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 22:32:56 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 22:32:57 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 22:32:57 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 22:32:57 - src.config - DEBUG - Collection already exists
+2025-10-31 22:32:57 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 22:33:01 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 22:33:01 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 22:33:02 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 22:33:02 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 22:33:02 - src.config - DEBUG - Collection already exists
+2025-10-31 22:33:02 - src.config - INFO - RAG Pipeline initialized with LLM provider: openrouter
+2025-10-31 22:33:02 - src.config - INFO - === APPLICATION STARTUP ===
+2025-10-31 22:33:02 - src.config - INFO - Research Paper RAG Assistant v1.0.0
+2025-10-31 22:33:02 - src.config - INFO - Debug Mode: True
+2025-10-31 22:33:02 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 22:33:02 - src.config - INFO - Embedding Model: all-MiniLM-L6-v2
+2025-10-31 22:33:02 - src.config - INFO - Qdrant: localhost:6333
+2025-10-31 22:33:02 - src.config - INFO - === STARTUP COMPLETE ===
+
+2025-10-31 22:33:02 - src.config - INFO - API routes loaded
+2025-10-31 22:33:02 - src.config - INFO - Database initialized successfully
+2025-10-31 22:33:11 - src.config - DEBUG - Listing papers
+2025-10-31 22:33:25 - src.config - INFO - Received query: what is Machine Learning?
+
+2025-10-31 22:33:25 - src.config - INFO - Processing query through RAG pipeline
+2025-10-31 22:33:25 - src.config - INFO - Retrieving context for query: what is Machine Learning?
+
+2025-10-31 22:33:25 - src.config - DEBUG - Embedding single text (length: 26)
+2025-10-31 22:33:25 - src.config - DEBUG - Successfully generated embedding (dim: 384)
+2025-10-31 22:33:25 - src.config - DEBUG - Query embedding generated
+2025-10-31 22:33:25 - src.config - INFO - Searching for top 5 similar vectors
+2025-10-31 22:33:25 - src.config - DEBUG - Query embedding type: <class 'numpy.ndarray'>, has tolist: True
+2025-10-31 22:33:25 - src.config - DEBUG - Query vector converted to list, length: 384
+2025-10-31 22:33:25 - src.config - INFO - Collection has 394 points before search
+2025-10-31 22:33:25 - src.config - INFO - Search complete: found 5 results
+2025-10-31 22:33:25 - src.config - INFO - Retrieved 5 relevant chunks
+2025-10-31 22:33:25 - src.config - INFO - Generating answer from 5 context chunks
+2025-10-31 22:33:25 - src.config - DEBUG - Prompt prepared, calling LLM
+2025-10-31 22:33:25 - src.config - DEBUG - Calling OpenRouter LLM
+2025-10-31 22:33:25 - src.config - DEBUG - Sending request to OpenRouter with model: deepseek/deepseek-chat
+2025-10-31 22:33:41 - src.config - DEBUG - OpenRouter response status: 200
+2025-10-31 22:33:41 - src.config - INFO - Answer generated (length: 947, confidence: 0.57)
+2025-10-31 22:33:41 - src.config - INFO - Query processing complete with 1 unique sources
+2025-10-31 22:33:41 - src.config - INFO - Query completed in 16.77s
+2025-10-31 22:36:03 - src.config - INFO - Received query: what is Machine Learning?
+
+2025-10-31 22:36:03 - src.config - INFO - Processing query through RAG pipeline
+2025-10-31 22:36:03 - src.config - INFO - Retrieving context for query: what is Machine Learning?
+
+2025-10-31 22:36:03 - src.config - DEBUG - Embedding single text (length: 26)
+2025-10-31 22:36:03 - src.config - DEBUG - Successfully generated embedding (dim: 384)
+2025-10-31 22:36:03 - src.config - DEBUG - Query embedding generated
+2025-10-31 22:36:03 - src.config - INFO - Searching for top 5 similar vectors
+2025-10-31 22:36:03 - src.config - DEBUG - Query embedding type: <class 'numpy.ndarray'>, has tolist: True
+2025-10-31 22:36:03 - src.config - DEBUG - Query vector converted to list, length: 384
+2025-10-31 22:36:03 - src.config - INFO - Collection has 394 points before search
+2025-10-31 22:36:03 - src.config - INFO - Search complete: found 5 results
+2025-10-31 22:36:03 - src.config - INFO - Retrieved 5 relevant chunks
+2025-10-31 22:36:03 - src.config - INFO - Generating answer from 5 context chunks
+2025-10-31 22:36:03 - src.config - DEBUG - Prompt prepared, calling LLM
+2025-10-31 22:36:03 - src.config - DEBUG - Calling OpenRouter LLM
+2025-10-31 22:36:03 - src.config - DEBUG - Sending request to OpenRouter with model: deepseek/deepseek-chat
+2025-10-31 22:36:14 - src.config - DEBUG - OpenRouter response status: 200
+2025-10-31 22:36:14 - src.config - INFO - Answer generated (length: 1122, confidence: 0.57)
+2025-10-31 22:36:14 - src.config - INFO - Query processing complete with 1 unique sources
+2025-10-31 22:36:14 - src.config - INFO - Query completed in 11.53s
+2025-10-31 22:55:11 - src.config - DEBUG - Listing papers
+2025-10-31 22:55:55 - src.config - DEBUG - Listing papers
+2025-10-31 22:59:40 - src.config - DEBUG - Listing papers
+2025-10-31 23:00:10 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 23:00:10 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 23:00:10 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:00:10 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 23:01:44 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 23:01:44 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 23:01:44 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:01:44 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 23:01:59 - src.config - DEBUG - Listing papers
+2025-10-31 23:02:23 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 23:02:23 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 23:02:23 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:02:23 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 23:02:35 - src.config - INFO - 
+=== APPLICATION SHUTDOWN ===
+2025-10-31 23:02:35 - src.config - INFO - Gracefully shutting down...
+2025-10-31 23:02:35 - src.config - INFO - === SHUTDOWN COMPLETE ===
+2025-10-31 23:02:39 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 23:02:39 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 23:02:39 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:02:39 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 23:02:47 - src.config - INFO - PDFProcessor initialized
+2025-10-31 23:02:47 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 23:02:52 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 23:02:52 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 23:02:53 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 23:02:53 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 23:02:53 - src.config - DEBUG - Collection already exists
+2025-10-31 23:02:53 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 23:02:58 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 23:02:58 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 23:02:59 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 23:02:59 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 23:02:59 - src.config - DEBUG - Collection already exists
+2025-10-31 23:02:59 - src.config - INFO - RAG Pipeline initialized with LLM provider: openrouter
+2025-10-31 23:02:59 - src.config - INFO - === APPLICATION STARTUP ===
+2025-10-31 23:02:59 - src.config - INFO - Research Paper RAG Assistant v1.0.0
+2025-10-31 23:02:59 - src.config - INFO - Debug Mode: True
+2025-10-31 23:02:59 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:02:59 - src.config - INFO - Embedding Model: all-MiniLM-L6-v2
+2025-10-31 23:02:59 - src.config - INFO - Qdrant: localhost:6333
+2025-10-31 23:02:59 - src.config - INFO - === STARTUP COMPLETE ===
+
+2025-10-31 23:02:59 - src.config - INFO - API routes loaded
+2025-10-31 23:02:59 - src.config - INFO - Database initialized successfully
+2025-10-31 23:03:52 - src.config - DEBUG - Listing papers
+2025-10-31 23:03:57 - src.config - DEBUG - Listing papers
+2025-10-31 23:04:33 - src.config - INFO - Received paper upload: Team-14_ConsultantAppointmentBookingApp.pdf
+2025-10-31 23:04:33 - src.config - DEBUG - File saved to: D:\Upscale AI\research-paper-rag-assessment\uploads\231355dd-247f-4e59-b356-73e911212f77_Team-14_ConsultantAppointmentBookingApp.pdf
+2025-10-31 23:04:33 - src.config - INFO - Starting PDF processing for: D:\Upscale AI\research-paper-rag-assessment\uploads\231355dd-247f-4e59-b356-73e911212f77_Team-14_ConsultantAppointmentBookingApp.pdf
+2025-10-31 23:04:33 - src.config - DEBUG - Extracting text from: D:\Upscale AI\research-paper-rag-assessment\uploads\231355dd-247f-4e59-b356-73e911212f77_Team-14_ConsultantAppointmentBookingApp.pdf
+2025-10-31 23:04:33 - src.config - DEBUG - PDF has 3 pages
+2025-10-31 23:04:33 - src.config - DEBUG - PDF metadata found: {'/Producer': 'Skia/PDF m133 Google Docs Renderer', '/Title': 'Untitled document'}
+2025-10-31 23:04:33 - src.config - INFO - Successfully extracted 3076 characters from PDF
+2025-10-31 23:04:33 - src.config - DEBUG - Identifying paper sections
+2025-10-31 23:04:33 - src.config - INFO - Identified 4 sections: ['introduction', 'methodology', 'conclusion', 'other']
+2025-10-31 23:04:33 - src.config - DEBUG - Chunking text (section: introduction, length: 1420)
+2025-10-31 23:04:33 - src.config - INFO - Created 1 chunks from 205 words
+2025-10-31 23:04:33 - src.config - DEBUG - Chunking text (section: methodology, length: 1002)
+2025-10-31 23:04:33 - src.config - INFO - Created 1 chunks from 147 words
+2025-10-31 23:04:33 - src.config - DEBUG - Chunking text (section: conclusion, length: 587)
+2025-10-31 23:04:33 - src.config - INFO - Created 1 chunks from 88 words
+2025-10-31 23:04:33 - src.config - DEBUG - Chunking text (section: other, length: 68)
+2025-10-31 23:04:33 - src.config - DEBUG - Text too short (8 words), creating single chunk
+2025-10-31 23:04:33 - src.config - INFO - PDF processing complete: 4 total chunks
+2025-10-31 23:04:33 - src.config - INFO - PDF processed: 4 chunks created
+2025-10-31 23:04:33 - src.config - INFO - Embedding 4 texts
+2025-10-31 23:04:33 - src.config - INFO - Successfully embedded 4 texts
+2025-10-31 23:04:33 - src.config - DEBUG - Embeddings shape: (4, 384)
+2025-10-31 23:04:33 - src.config - DEBUG - First embedding type: <class 'numpy.ndarray'>, first 5 values: [-0.04865565  0.02142458 -0.09633929  0.03603258 -0.11250342]
+2025-10-31 23:04:33 - src.config - INFO - Generated 4 embeddings
+2025-10-31 23:04:33 - src.config - INFO - Adding 4 vectors to Qdrant
+2025-10-31 23:04:33 - src.config - INFO - Embedding type: <class 'numpy.ndarray'>, shape info available: True
+2025-10-31 23:04:33 - src.config - DEBUG - Processing chunk 0: type=<class 'numpy.ndarray'>, len/shape=384
+2025-10-31 23:04:33 - src.config - DEBUG - Processing chunk 1: type=<class 'numpy.ndarray'>, len/shape=384
+2025-10-31 23:04:33 - src.config - DEBUG - Processing chunk 2: type=<class 'numpy.ndarray'>, len/shape=384
+2025-10-31 23:04:33 - src.config - DEBUG - Processing chunk 3: type=<class 'numpy.ndarray'>, len/shape=384
+2025-10-31 23:04:33 - src.config - INFO - Created 4 point objects, uploading to Qdrant...
+2025-10-31 23:04:33 - src.config - INFO - Successfully added 4 vectors. Collection now has 398 total points
+2025-10-31 23:04:33 - src.config - INFO - Stored 4 vectors in Qdrant
+2025-10-31 23:04:33 - src.config - INFO - Paper 231355dd-247f-4e59-b356-73e911212f77 created in database
+2025-10-31 23:04:33 - src.config - INFO - Paper 231355dd-247f-4e59-b356-73e911212f77 registered successfully
+2025-10-31 23:04:33 - src.config - INFO - Upload completed in 0.43s
+2025-10-31 23:04:33 - src.config - DEBUG - Listing papers
+2025-10-31 23:06:39 - src.config - DEBUG - Listing papers
+2025-10-31 23:06:39 - src.config - DEBUG - Listing papers
+2025-10-31 23:06:55 - src.config - DEBUG - Listing papers
+2025-10-31 23:07:06 - src.config - INFO - Received query: what is ml?
+2025-10-31 23:07:06 - src.config - INFO - Processing query through RAG pipeline
+2025-10-31 23:07:06 - src.config - INFO - Retrieving context for query: what is ml?
+2025-10-31 23:07:06 - src.config - DEBUG - Embedding single text (length: 11)
+2025-10-31 23:07:06 - src.config - DEBUG - Successfully generated embedding (dim: 384)
+2025-10-31 23:07:06 - src.config - DEBUG - Query embedding generated
+2025-10-31 23:07:06 - src.config - INFO - Searching for top 5 similar vectors
+2025-10-31 23:07:06 - src.config - DEBUG - Query embedding type: <class 'numpy.ndarray'>, has tolist: True
+2025-10-31 23:07:06 - src.config - DEBUG - Query vector converted to list, length: 384
+2025-10-31 23:07:06 - src.config - INFO - Collection has 398 points before search
+2025-10-31 23:07:06 - src.config - INFO - Search complete: found 5 results
+2025-10-31 23:07:06 - src.config - INFO - Retrieved 5 relevant chunks
+2025-10-31 23:07:06 - src.config - INFO - Generating answer from 5 context chunks
+2025-10-31 23:07:06 - src.config - DEBUG - Prompt prepared, calling LLM
+2025-10-31 23:07:06 - src.config - DEBUG - Calling OpenRouter LLM
+2025-10-31 23:07:06 - src.config - DEBUG - Sending request to OpenRouter with model: deepseek/deepseek-chat
+2025-10-31 23:07:15 - src.config - DEBUG - OpenRouter response status: 200
+2025-10-31 23:07:15 - src.config - INFO - Answer generated (length: 993, confidence: 0.26)
+2025-10-31 23:07:15 - src.config - INFO - Query processing complete with 1 unique sources
+2025-10-31 23:07:15 - src.config - INFO - Query completed in 8.79s
+2025-10-31 23:11:44 - src.config - INFO - Received query: what is consultant system?
+2025-10-31 23:11:44 - src.config - INFO - Processing query through RAG pipeline
+2025-10-31 23:11:44 - src.config - INFO - Retrieving context for query: what is consultant system?
+2025-10-31 23:11:44 - src.config - DEBUG - Embedding single text (length: 26)
+2025-10-31 23:11:44 - src.config - DEBUG - Successfully generated embedding (dim: 384)
+2025-10-31 23:11:44 - src.config - DEBUG - Query embedding generated
+2025-10-31 23:11:44 - src.config - INFO - Searching for top 5 similar vectors
+2025-10-31 23:11:44 - src.config - DEBUG - Query embedding type: <class 'numpy.ndarray'>, has tolist: True
+2025-10-31 23:11:44 - src.config - DEBUG - Query vector converted to list, length: 384
+2025-10-31 23:11:44 - src.config - INFO - Collection has 398 points before search
+2025-10-31 23:11:44 - src.config - INFO - Search complete: found 5 results
+2025-10-31 23:11:44 - src.config - INFO - Retrieved 5 relevant chunks
+2025-10-31 23:11:44 - src.config - INFO - Generating answer from 5 context chunks
+2025-10-31 23:11:44 - src.config - DEBUG - Prompt prepared, calling LLM
+2025-10-31 23:11:44 - src.config - DEBUG - Calling OpenRouter LLM
+2025-10-31 23:11:44 - src.config - DEBUG - Sending request to OpenRouter with model: deepseek/deepseek-chat
+2025-10-31 23:11:57 - src.config - DEBUG - OpenRouter response status: 200
+2025-10-31 23:11:57 - src.config - INFO - Answer generated (length: 1316, confidence: 0.53)
+2025-10-31 23:11:57 - src.config - INFO - Query processing complete with 2 unique sources
+2025-10-31 23:11:57 - src.config - INFO - Query completed in 12.76s
+2025-10-31 23:17:50 - src.config - INFO - 
+=== APPLICATION SHUTDOWN ===
+2025-10-31 23:17:50 - src.config - INFO - Gracefully shutting down...
+2025-10-31 23:17:50 - src.config - INFO - === SHUTDOWN COMPLETE ===

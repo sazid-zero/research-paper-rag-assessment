@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Send, Loader2, Quote } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import MarkdownRenderer from "@/components/markdown-renderer"
 
 export default function QueryInterface({ papers }) {
   const [query, setQuery] = useState("")
@@ -119,7 +120,7 @@ export default function QueryInterface({ papers }) {
                 <Quote className="w-4 h-4" />
                 Answer
               </h3>
-              <p className="text-white leading-relaxed">{result.answer}</p>
+              <MarkdownRenderer content={result.answer} />
               <div className="mt-4 flex items-center gap-4 text-xs text-slate-400">
                 <span>Confidence: {(result.confidence * 100).toFixed(0)}%</span>
                 <span>Response time: {result.response_time_ms.toFixed(0)}ms</span>
