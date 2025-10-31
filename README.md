@@ -434,16 +434,6 @@ npm i -g vercel
 vercel --prod
 ```
 
-### Backend Deployment Options
-
-- **Railway**: Easy Python deployment
-- **Render**: Free tier available
-- **AWS EC2**: Full control
-- **Google Cloud Run**: Serverless containers
-- **DigitalOcean**: Simple VPS
-
----
-
 ##  Performance Benchmarks
 
 | Task | Time | Notes |
