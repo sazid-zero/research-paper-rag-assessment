@@ -8,7 +8,7 @@ Production-grade Retrieval-Augmented Generation system for academic papers.
 - **Vector Search**: Fast semantic similarity search using Qdrant
 - **LLM Integration**: Support for Ollama, DeepSeek, and OpenAI
 - **API Endpoints**: RESTful API for paper management and querying
-- **Comprehensive Logging**: Detailed debugging with [v0] prefixed logs
+- **Comprehensive Logging**: Detailed debugging with logs
 
 ## Quick Start
 
