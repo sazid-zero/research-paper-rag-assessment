@@ -4,6 +4,15 @@ A production-ready **Retrieval-Augmented Generation (RAG)** system that helps re
 
 ![RAG System Architecture](https://img.shields.io/badge/RAG-System-blue) ![Python](https://img.shields.io/badge/Python-3.10+-green) ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-teal)
 
+## Screenshots
+
+![Home Page](./Screenshots/home.png)
+
+![papers Page](./Screenshots/upload.png)
+
+![query Page](./Screenshots/query.png)
+
+
 ##  Problem Statement
 
 Researchers waste hours reading through multiple papers to find:
@@ -68,14 +77,14 @@ Researchers waste hours reading through multiple papers to find:
 
 #### 1. Clone the Repository
 
-\`\`\`bash
+```bash
 git clone https://github.com/YOUR_USERNAME/research-paper-rag-assessment.git
 cd research-paper-rag-assessment
-\`\`\`
+```
 
 #### 2. Backend Setup
 
-\`\`\`bash
+```bash
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -86,11 +95,11 @@ pip install -r requirements.txt
 # Configure environment variables
 cp .env.example .env
 # Edit .env with your settings (LLM provider, API keys, etc.)
-\`\`\`
+```
 
 #### 3. Start Qdrant (Vector Database)
 
-\`\`\`bash
+```bash
 # Using Docker
 docker run -p 6333:6333 -p 6334:6334 \
   -v $(pwd)/qdrant_storage:/qdrant/storage:z \
@@ -98,44 +107,44 @@ docker run -p 6333:6333 -p 6334:6334 \
 
 # Or using docker-compose
 docker-compose up -d qdrant
-\`\`\`
+```
 
 #### 4. Start LLM Provider
 
 **Option A: Ollama (Local, Free)**
-\`\`\`bash
+```bash
 # Install Ollama from https://ollama.ai
 ollama serve
 ollama pull llama2  # or mistral, neural-chat, etc.
-\`\`\`
+```
 
 **Option B: OpenRouter (API, Recommended)**
-\`\`\`bash
+```bash
 # Get API key from https://openrouter.ai
 # Add to .env file:
 # OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # LLM_PROVIDER=openrouter
-\`\`\`
+```
 
 **Option C: DeepSeek or OpenAI**
-\`\`\`bash
+```bash
 # Add respective API keys to .env
 # LLM_PROVIDER=deepseek  # or openai
-\`\`\`
+```
 
 #### 5. Start Backend Server
 
-\`\`\`bash
+```bash
 # From project root
 python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
-\`\`\`
+```
 
 Backend will be available at `http://localhost:8000`
 API docs at `http://localhost:8000/docs`
 
 #### 6. Frontend Setup
 
-\`\`\`bash
+```bash
 # Install dependencies
 npm install
 # or
@@ -143,7 +152,7 @@ pnpm install
 
 # Start development server
 npm run dev
-\`\`\`
+```
 
 Frontend will be available at `http://localhost:3000`
 
@@ -167,7 +176,7 @@ Frontend will be available at `http://localhost:3000`
 
 ### Example Queries
 
-\`\`\`
+```
 What methodology was used in the transformer paper?
 
 Compare the datasets used across all papers.
@@ -177,7 +186,7 @@ What are the key findings about attention mechanisms?
 Summarize the results section of the BERT paper.
 
 What evaluation metrics were used?
-\`\`\`
+```
 
 ---
 
@@ -185,7 +194,7 @@ What evaluation metrics were used?
 
 Edit `.env` file to customize:
 
-\`\`\`bash
+```bash
 # LLM Provider (ollama, deepseek, openai, openrouter)
 LLM_PROVIDER=openrouter
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
@@ -211,13 +220,13 @@ CONFIDENCE_THRESHOLD=0.5
 
 # Debugging
 DEBUG=True
-\`\`\`
+```
 
 ---
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 research-paper-rag-assessment/
 ├── src/                          # Backend (Python)
 │   ├── main.py                   # FastAPI application entry
@@ -249,7 +258,7 @@ research-paper-rag-assessment/
 ├── .env.example                  # Environment template
 ├── README.md                     # This file
 └── APPROACH.md                   # Technical approach doc
-\`\`\`
+```
 
 ---
 
@@ -257,16 +266,16 @@ research-paper-rag-assessment/
 
 ### Upload Paper
 
-\`\`\`bash
+```bash
 POST /api/papers/upload
 Content-Type: multipart/form-data
 
 # Example
 curl -F "file=@paper.pdf" http://localhost:8000/api/papers/upload
-\`\`\`
+```
 
 **Response:**
-\`\`\`json
+```json
 {
   "id": 1,
   "title": "Attention is All You Need",
@@ -275,11 +284,11 @@ curl -F "file=@paper.pdf" http://localhost:8000/api/papers/upload
   "chunks_created": 45,
   "status": "success"
 }
-\`\`\`
+```
 
 ### Query Papers
 
-\`\`\`bash
+```bash
 POST /api/query
 Content-Type: application/json
 
@@ -288,10 +297,10 @@ Content-Type: application/json
   "top_k": 5,
   "paper_ids": [1, 2]  // optional
 }
-\`\`\`
+```
 
 **Response:**
-\`\`\`json
+```json
 {
   "answer": "The transformer architecture uses self-attention mechanisms...",
   "citations": [
@@ -305,25 +314,25 @@ Content-Type: application/json
   ],
   "processing_time": 2.3
 }
-\`\`\`
+```
 
 ### List Papers
 
-\`\`\`bash
+```bash
 GET /api/papers
-\`\`\`
+```
 
 ### Delete Paper
 
-\`\`\`bash
+```bash
 DELETE /api/papers/{paper_id}
-\`\`\`
+```
 
 ---
 
 ##  Testing
 
-\`\`\`bash
+```bash
 # Run all tests
 pytest tests/ -v
 
@@ -332,7 +341,7 @@ pytest tests/ --cov=src --cov-report=html
 
 # Run specific test file
 pytest tests/test_services.py -v
-\`\`\`
+```
 
 ---
 
@@ -340,7 +349,7 @@ pytest tests/test_services.py -v
 
 ### Qdrant Connection Error
 
-\`\`\`bash
+```bash
 # Check if Qdrant is running
 curl http://localhost:6333/health
 
@@ -349,11 +358,11 @@ docker restart <container_id>
 
 # Check logs
 docker logs <container_id>
-\`\`\`
+```
 
 ### Ollama Connection Error
 
-\`\`\`bash
+```bash
 # Check if Ollama is running
 curl http://localhost:11434/api/tags
 
@@ -362,7 +371,7 @@ ollama serve
 
 # Pull model if missing
 ollama pull llama2
-\`\`\`
+```
 
 ### Frontend Not Connecting to Backend
 
@@ -389,7 +398,7 @@ ollama pull llama2
 
 ### Docker Deployment
 
-\`\`\`bash
+```bash
 # Build and run all services
 docker-compose up -d
 
@@ -398,7 +407,7 @@ docker-compose logs -f
 
 # Stop services
 docker-compose down
-\`\`\`
+```
 
 ### Production Checklist
 
@@ -415,13 +424,13 @@ docker-compose down
 
 ### Vercel Deployment (Frontend)
 
-\`\`\`bash
+```bash
 # Install Vercel CLI
 npm i -g vercel
 
 # Deploy
 vercel --prod
-\`\`\`
+```
 
 ### Backend Deployment Options
 

@@ -8593,3 +8593,31 @@ requests.exceptions.HTTPError: 402 Client Error: Payment Required for url: https
 === APPLICATION SHUTDOWN ===
 2025-10-31 23:17:50 - src.config - INFO - Gracefully shutting down...
 2025-10-31 23:17:50 - src.config - INFO - === SHUTDOWN COMPLETE ===
+2025-10-31 23:17:54 - src.config - INFO - Logging configured. Level: DEBUG
+2025-10-31 23:17:54 - src.config - DEBUG - Log file: D:\Upscale AI\research-paper-rag-assessment\logs\rag_system.log
+2025-10-31 23:17:54 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:17:54 - src.config - INFO - OpenRouter API key configured successfully
+2025-10-31 23:18:03 - src.config - INFO - PDFProcessor initialized
+2025-10-31 23:18:03 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 23:18:09 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 23:18:09 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 23:18:10 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 23:18:10 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 23:18:10 - src.config - DEBUG - Collection already exists
+2025-10-31 23:18:10 - src.config - INFO - Loading embedding model: all-MiniLM-L6-v2
+2025-10-31 23:18:15 - src.config - INFO - Embedding model loaded successfully
+2025-10-31 23:18:15 - src.config - INFO - Connecting to Qdrant at localhost:6333
+2025-10-31 23:18:16 - src.config - INFO - Successfully connected to Qdrant
+2025-10-31 23:18:16 - src.config - DEBUG - Checking if collection 'research_papers' exists
+2025-10-31 23:18:16 - src.config - DEBUG - Collection already exists
+2025-10-31 23:18:16 - src.config - INFO - RAG Pipeline initialized with LLM provider: openrouter
+2025-10-31 23:18:16 - src.config - INFO - === APPLICATION STARTUP ===
+2025-10-31 23:18:16 - src.config - INFO - Research Paper RAG Assistant v1.0.0
+2025-10-31 23:18:16 - src.config - INFO - Debug Mode: True
+2025-10-31 23:18:16 - src.config - INFO - LLM Provider: openrouter
+2025-10-31 23:18:16 - src.config - INFO - Embedding Model: all-MiniLM-L6-v2
+2025-10-31 23:18:16 - src.config - INFO - Qdrant: localhost:6333
+2025-10-31 23:18:16 - src.config - INFO - === STARTUP COMPLETE ===
+
+2025-10-31 23:18:16 - src.config - INFO - API routes loaded
+2025-10-31 23:18:16 - src.config - INFO - Database initialized successfully

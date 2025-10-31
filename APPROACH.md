@@ -6,7 +6,7 @@ This document explains the technical decisions, architecture, and implementation
 
 ##  System Architecture
 
-\`\`\`
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                        User Interface                       │
 │              (Next.js 16 + React 19 + shadcn/ui)            │
@@ -29,23 +29,23 @@ This document explains the technical decisions, architecture, and implementation
 │             │  │ (sentence-  │  │  Deepseek)  │
 └─────────────┘  │transformers)│  └─────────────┘
                  └─────────────┘
-\`\`\`
+```
 
 ### Data Flow
 
 **Document Ingestion:**
-\`\`\`
+```
 PDF Upload → Text Extraction → Section Detection → 
 Chunking (with overlap) → Embedding Generation → 
 Vector Storage (Qdrant) → Metadata Storage
-\`\`\`
+```
 
 **Query Processing:**
-\`\`\`
+```
 User Question → Query Embedding → Vector Search (Top-K) → 
 Context Assembly → LLM Prompt → Answer Generation → 
 Citation Extraction → Response Formatting
-\`\`\`
+```
 
 ---
 
@@ -78,7 +78,7 @@ Citation Extraction → Response Formatting
 **Decision**: PyPDF2 + pdfplumber with section-aware chunking
 
 **Implementation**:
-\`\`\`python
+```python
 # Extract text with section detection
 sections = {
     "abstract": [],
@@ -94,7 +94,7 @@ chunks = create_overlapping_chunks(
     chunk_size=512,
     overlap=100
 )
-\`\`\`
+```
 
 **Rationale**:
 - **Section Awareness**: Improves citation accuracy (users know which section info came from)
@@ -134,7 +134,7 @@ chunks = create_overlapping_chunks(
 | **Open Source** | No vendor lock-in |
 
 **Configuration**:
-\`\`\`python
+```python
 # Collection setup
 client.create_collection(
     collection_name="research_papers",
@@ -143,7 +143,7 @@ client.create_collection(
         distance=Distance.COSINE
     )
 )
-\`\`\`
+```
 
 **Alternatives Considered**:
 - **Pinecone**: Cloud-only, costs money, vendor lock-in
@@ -171,12 +171,12 @@ client.create_collection(
 - **License**: Apache 2.0 (commercial friendly)
 
 **Performance**:
-\`\`\`
+```
 Embedding Generation:
 - Single sentence: ~10ms
 - Batch of 256: ~500ms
 - Full paper (50 chunks): ~1-2s
-\`\`\`
+```
 
 **Alternatives**:
 
@@ -206,7 +206,7 @@ Embedding Generation:
 
 **Supported Providers**:
 
-\`\`\`python
+```python
 # Ollama (Local)
 if LLM_PROVIDER == "ollama":
     response = requests.post(
@@ -229,7 +229,7 @@ elif LLM_PROVIDER == "deepseek":
 # OpenAI (API)
 elif LLM_PROVIDER == "openai":
     # OpenAI API
-\`\`\`
+```
 
 **Provider Comparison**:
 
@@ -265,16 +265,16 @@ elif LLM_PROVIDER == "openai":
 - **TypeScript**: Type safety throughout
 
 **Component Architecture**:
-\`\`\`
+```
 app/page.tsx (Main Page)
 ├── FileUploadZone (PDF upload)
 ├── PapersList (Display uploaded papers)
 └── QueryInterface (Ask questions)
     └── MarkdownRenderer (Format answers)
-\`\`\`
+```
 
 **Design System**:
-\`\`\`css
+```css
 /* globals.css - Design tokens */
 @theme inline {
   --color-background: 240 10% 3.9%;
@@ -283,7 +283,7 @@ app/page.tsx (Main Page)
   --color-accent: 142 76% 36%;
   /* ... */
 }
-\`\`\`
+```
 
 **Benefits**:
 - **Server Components**: Faster initial load
@@ -299,25 +299,25 @@ app/page.tsx (Main Page)
 **Decision**: Overlapping chunks with configurable size
 
 **Configuration**:
-\`\`\`python
+```python
 CHUNK_SIZE = 512      # tokens per chunk
 CHUNK_OVERLAP = 100   # 20% overlap
 MIN_CHUNK_LENGTH = 50 # skip tiny chunks
-\`\`\`
+```
 
 **Why Overlapping Chunks?**
 
 **Problem**: Hard boundaries can split important context
-\`\`\`
+```
 Chunk 1: "...the model uses attention mechanisms"
 Chunk 2: "to process input sequences efficiently..."
-\`\`\`
+```
 
 **Solution**: Overlap preserves context
-\`\`\`
+```
 Chunk 1: "...the model uses attention mechanisms to process..."
 Chunk 2: "...attention mechanisms to process input sequences efficiently..."
-\`\`\`
+```
 
 **Trade-offs**:
 - ✅ Better context preservation
@@ -338,7 +338,7 @@ Chunk 2: "...attention mechanisms to process input sequences efficiently..."
 **Decision**: Include detailed citations with every answer
 
 **Citation Format**:
-\`\`\`json
+```json
 {
   "paper_title": "Attention is All You Need",
   "section": "Methodology",
@@ -346,10 +346,10 @@ Chunk 2: "...attention mechanisms to process input sequences efficiently..."
   "relevance_score": 0.89,
   "text_snippet": "We propose a new simple network..."
 }
-\`\`\`
+```
 
 **Implementation**:
-\`\`\`python
+```python
 # Extract citations from retrieved contexts
 citations = []
 for context in top_k_contexts:
@@ -360,7 +360,7 @@ for context in top_k_contexts:
         "relevance_score": context.score,
         "text_snippet": context.payload["text"][:200]
     })
-\`\`\`
+```
 
 **Benefits**:
 - **Transparency**: Users see where information came from
@@ -375,12 +375,12 @@ for context in top_k_contexts:
 **Decision**: Comprehensive logging for easy debugging
 
 **Logging Strategy**:
-\`\`\`python
+```python
 logger.info(" Starting PDF processing")
 logger.debug(f" Extracted {len(chunks)} chunks")
 logger.warning(" No sections detected, using full text")
 logger.error(f" Failed to connect to Qdrant: {error}")
-\`\`\`
+```
 
 **Benefits**:
 - Easy to grep: `grep logs/rag_system.log`
@@ -389,7 +389,7 @@ logger.error(f" Failed to connect to Qdrant: {error}")
 - File and console output
 
 **Error Handling**:
-\`\`\`python
+```python
 try:
     result = process_pdf(file)
 except PDFProcessingError as e:
@@ -398,7 +398,7 @@ except PDFProcessingError as e:
 except Exception as e:
     logger.error(f" Unexpected error: {e}")
     raise HTTPException(status_code=500, detail="Internal server error")
-\`\`\`
+```
 
 ---
 
@@ -407,13 +407,13 @@ except Exception as e:
 **Decision**: Use `react-markdown` for proper answer formatting
 
 **Problem**: Backend returns markdown, but it was showing as raw text:
-\`\`\`
+```
 **Definition**: Machine learning is...
 1. **Key Aspects**:
-\`\`\`
+```
 
 **Solution**: MarkdownRenderer component
-\`\`\`tsx
+```tsx
 import ReactMarkdown from 'react-markdown'
 
 export function MarkdownRenderer({ content }: { content: string }) {
@@ -432,7 +432,7 @@ export function MarkdownRenderer({ content }: { content: string }) {
     </div>
   )
 }
-\`\`\`
+```
 
 **Result**: Properly formatted answers with bold text, lists, and structure
 
@@ -533,7 +533,7 @@ export function MarkdownRenderer({ content }: { content: string }) {
 ##  Testing Strategy
 
 ### Unit Tests
-\`\`\`python
+```python
 # Test chunking logic
 def test_chunking():
     text = "..." * 1000
@@ -546,10 +546,10 @@ def test_embeddings():
     service = EmbeddingService()
     embedding = service.embed("test text")
     assert len(embedding) == 384
-\`\`\`
+```
 
 ### Integration Tests
-\`\`\`python
+```python
 # Test full RAG pipeline
 def test_rag_pipeline():
     # Upload paper
@@ -560,16 +560,16 @@ def test_rag_pipeline():
     response = client.post("/api/query", json={"question": "What is this about?"})
     assert response.status_code == 200
     assert "answer" in response.json()
-\`\`\`
+```
 
 ### Load Testing
-\`\`\`bash
+```bash
 # Apache Bench
 ab -n 1000 -c 10 http://localhost:8000/api/query
 
 # Locust
 locust -f load_test.py --host=http://localhost:8000
-\`\`\`
+```
 
 ---
 

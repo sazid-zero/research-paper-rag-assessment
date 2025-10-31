@@ -32,3 +32,5 @@ Check the render method of `Home`.
 [00:14:50.775] Server  LOG      ✓ Compiled in 208ms
 [00:18:02.095] Server  LOG      ✓ Compiled in 215ms
 [00:41:26.353] Server  LOG        Reload env: .env
+[00:42:38.193] Server  LOG        Reload env: .env
+[01:27:07.247] Server  LOG        Reload env: .env
