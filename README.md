@@ -6,7 +6,7 @@ A production-ready **Retrieval-Augmented Generation (RAG)** system that helps re
 
 ## Screenshots
 
-![Home Page](./Screenshots/home.png)
+![Home Page](./Screenshots/Home.png)
 
 ![papers Page](./Screenshots/upload.png)
 
