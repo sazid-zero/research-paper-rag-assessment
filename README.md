@@ -22,7 +22,7 @@ Researchers waste hours reading through multiple papers to find:
 - Comparative analysis across papers
 - Citations and references
 
-**Our Solution**: An intelligent assistant that does this in seconds using advanced RAG technology.
+**My Solution**: An intelligent assistant that does this in seconds using advanced RAG technology.
 
 ---
 
