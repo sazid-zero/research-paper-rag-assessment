@@ -64,7 +64,7 @@ class Config:
     OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat")
     
     # Database (optional: for storing metadata)
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./papers.db")
+    NEON_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./papers.db")
     
     # PDF Processing
     MAX_PDF_SIZE_MB = int(os.getenv("MAX_PDF_SIZE_MB", 50))
@@ -88,9 +88,8 @@ def setup_logging() -> logging.Logger:
     log_level = logging.DEBUG if Config.DEBUG else logging.INFO
     logger.setLevel(log_level)
     
-    # Formatter
     formatter = logging.Formatter(
-        fmt='%(asctime)s - %(name)s - %(levelname)s - [v0] %(message)s',
+        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
@@ -107,8 +106,15 @@ def setup_logging() -> logging.Logger:
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     
-    logger.info(f"[v0] Logging configured. Level: {logging.getLevelName(log_level)}")
-    logger.debug(f"[v0] Log file: {log_file}")
+    logger.info(f"Logging configured. Level: {logging.getLevelName(log_level)}")
+    logger.debug(f"Log file: {log_file}")
+    
+    logger.info(f"LLM Provider: {Config.LLM_PROVIDER}")
+    if Config.LLM_PROVIDER == "openrouter":
+        if Config.OPENROUTER_API_KEY and Config.OPENROUTER_API_KEY.startswith("sk-or-v1-"):
+            logger.info("OpenRouter API key configured successfully")
+        else:
+            logger.warning("OpenRouter API key not configured or invalid. Please set OPENROUTER_API_KEY in .env file")
     
     return logger
 
@@ -117,4 +123,4 @@ def setup_logging() -> logging.Logger:
 logger = setup_logging()
 
 if __name__ == "__main__":
-    logger.info("[v0] Config module loaded successfully")
+    logger.info("Config module loaded successfully")

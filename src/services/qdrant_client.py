@@ -20,26 +20,26 @@ class QdrantVectorClient:
         self.collection_name = Config.QDRANT_COLLECTION
         self.embedding_dim = Config.EMBEDDING_DIMENSION
         
-        self.logger.info(f"[v0] Connecting to Qdrant at {self.host}:{self.port}")
+        self.logger.info(f"Connecting to Qdrant at {self.host}:{self.port}")
         
         try:
             self.client = QdrantClient(host=self.host, port=self.port)
-            self.logger.info("[v0] Successfully connected to Qdrant")
+            self.logger.info("Successfully connected to Qdrant")
             self._ensure_collection_exists()
         except Exception as e:
-            self.logger.error(f"[v0] Failed to connect to Qdrant: {str(e)}", exc_info=True)
+            self.logger.error(f"Failed to connect to Qdrant: {str(e)}", exc_info=True)
             raise
     
     def _ensure_collection_exists(self):
         """Create collection if it doesn't exist"""
-        self.logger.debug(f"[v0] Checking if collection '{self.collection_name}' exists")
+        self.logger.debug(f"Checking if collection '{self.collection_name}' exists")
         
         try:
             collections = self.client.get_collections()
             existing_collections = [col.name for col in collections.collections]
             
             if self.collection_name not in existing_collections:
-                self.logger.info(f"[v0] Creating collection: {self.collection_name}")
+                self.logger.info(f"Creating collection: {self.collection_name}")
                 self.client.create_collection(
                     collection_name=self.collection_name,
                     vectors_config=VectorParams(
@@ -47,11 +47,11 @@ class QdrantVectorClient:
                         distance=Distance.COSINE
                     )
                 )
-                self.logger.info(f"[v0] Collection created successfully")
+                self.logger.info(f"Collection created successfully")
             else:
-                self.logger.debug(f"[v0] Collection already exists")
+                self.logger.debug(f"Collection already exists")
         except Exception as e:
-            self.logger.error(f"[v0] Error ensuring collection: {str(e)}", exc_info=True)
+            self.logger.error(f"Error ensuring collection: {str(e)}", exc_info=True)
             raise
     
     def add_vectors(self, texts: List[str], embeddings: List, metadata: List[Dict]) -> List[str]:
@@ -66,15 +66,15 @@ class QdrantVectorClient:
         Returns:
             List of point IDs
         """
-        self.logger.info(f"[v0] Adding {len(texts)} vectors to Qdrant")
-        self.logger.info(f"[v0] Embedding type: {type(embeddings)}, shape info available: {hasattr(embeddings, 'shape')}")
+        self.logger.info(f"Adding {len(texts)} vectors to Qdrant")
+        self.logger.info(f"Embedding type: {type(embeddings)}, shape info available: {hasattr(embeddings, 'shape')}")
         
         try:
             points = []
             point_ids = []
             
             for i, (text, embedding, meta) in enumerate(zip(texts, embeddings, metadata)):
-                self.logger.debug(f"[v0] Processing chunk {i}: type={type(embedding)}, len/shape={len(embedding) if hasattr(embedding, '__len__') else 'N/A'}")
+                self.logger.debug(f"Processing chunk {i}: type={type(embedding)}, len/shape={len(embedding) if hasattr(embedding, '__len__') else 'N/A'}")
                 
                 point_id = str(uuid.uuid4())
                 point_ids.append(point_id)
@@ -94,7 +94,7 @@ class QdrantVectorClient:
                 )
                 points.append(point)
             
-            self.logger.info(f"[v0] Created {len(points)} point objects, uploading to Qdrant...")
+            self.logger.info(f"Created {len(points)} point objects, uploading to Qdrant...")
             
             # Upload to Qdrant
             self.client.upsert(
@@ -103,11 +103,11 @@ class QdrantVectorClient:
             )
             
             stats = self.client.get_collection(self.collection_name)
-            self.logger.info(f"[v0] Successfully added {len(point_ids)} vectors. Collection now has {stats.points_count} total points")
+            self.logger.info(f"Successfully added {len(point_ids)} vectors. Collection now has {stats.points_count} total points")
             return point_ids
             
         except Exception as e:
-            self.logger.error(f"[v0] Error adding vectors: {str(e)}", exc_info=True)
+            self.logger.error(f"Error adding vectors: {str(e)}", exc_info=True)
             raise
     
     def search(self, query_embedding: List, top_k: int = 5, paper_ids: Optional[List[str]] = None) -> List[Dict]:
@@ -122,22 +122,22 @@ class QdrantVectorClient:
         Returns:
             List of search results with scores
         """
-        self.logger.info(f"[v0] Searching for top {top_k} similar vectors")
-        self.logger.debug(f"[v0] Query embedding type: {type(query_embedding)}, has tolist: {hasattr(query_embedding, 'tolist')}")
+        self.logger.info(f"Searching for top {top_k} similar vectors")
+        self.logger.debug(f"Query embedding type: {type(query_embedding)}, has tolist: {hasattr(query_embedding, 'tolist')}")
         
         try:
             # Convert to list if needed
             query_vec = query_embedding.tolist() if hasattr(query_embedding, 'tolist') else list(query_embedding)
-            self.logger.debug(f"[v0] Query vector converted to list, length: {len(query_vec)}")
+            self.logger.debug(f"Query vector converted to list, length: {len(query_vec)}")
             
             # Check collection stats before search
             stats = self.client.get_collection(self.collection_name)
-            self.logger.info(f"[v0] Collection has {stats.points_count} points before search")
+            self.logger.info(f"Collection has {stats.points_count} points before search")
             
             # Build filter if paper_ids provided
             query_filter = None
             if paper_ids:
-                self.logger.debug(f"[v0] Filtering by paper IDs: {paper_ids}")
+                self.logger.debug(f"Filtering by paper IDs: {paper_ids}")
                 query_filter = Filter(
                     must=[
                         FieldCondition(
@@ -167,11 +167,11 @@ class QdrantVectorClient:
                     "page_number": hit.payload.get("page_number", 1)
                 })
             
-            self.logger.info(f"[v0] Search complete: found {len(results)} results")
+            self.logger.info(f"Search complete: found {len(results)} results")
             return results
             
         except Exception as e:
-            self.logger.error(f"[v0] Search error: {str(e)}", exc_info=True)
+            self.logger.error(f"Search error: {str(e)}", exc_info=True)
             raise
     
     def delete_by_paper_id(self, paper_id: str) -> bool:
@@ -184,7 +184,7 @@ class QdrantVectorClient:
         Returns:
             Success status
         """
-        self.logger.info(f"[v0] Deleting vectors for paper: {paper_id}")
+        self.logger.info(f"Deleting vectors for paper: {paper_id}")
         
         try:
             # Delete using filter
@@ -200,16 +200,16 @@ class QdrantVectorClient:
                 )
             )
             
-            self.logger.info(f"[v0] Successfully deleted vectors for paper {paper_id}")
+            self.logger.info(f"Successfully deleted vectors for paper {paper_id}")
             return True
             
         except Exception as e:
-            self.logger.error(f"[v0] Error deleting vectors: {str(e)}", exc_info=True)
+            self.logger.error(f"Error deleting vectors: {str(e)}", exc_info=True)
             return False
     
     def get_collection_stats(self) -> Dict:
         """Get collection statistics"""
-        self.logger.debug("[v0] Fetching collection statistics")
+        self.logger.debug("Fetching collection statistics")
         
         try:
             stats = self.client.get_collection(self.collection_name)
@@ -219,5 +219,5 @@ class QdrantVectorClient:
                 "vectors_count": stats.vectors_count if hasattr(stats, 'vectors_count') else stats.points_count
             }
         except Exception as e:
-            self.logger.error(f"[v0] Error getting stats: {str(e)}", exc_info=True)
+            self.logger.error(f"Error getting stats: {str(e)}", exc_info=True)
             return {}

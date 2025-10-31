@@ -18,7 +18,7 @@ class PDFProcessor:
         self.chunk_size = Config.CHUNK_SIZE
         self.chunk_overlap = Config.CHUNK_OVERLAP
         self.min_chunk_length = Config.MIN_CHUNK_LENGTH
-        self.logger.info("[v0] PDFProcessor initialized")
+        self.logger.info("PDFProcessor initialized")
     
     def extract_text_from_pdf(self, pdf_path: str) -> Tuple[str, Dict]:
         """
@@ -30,7 +30,7 @@ class PDFProcessor:
         Returns:
             Tuple of (full_text, metadata)
         """
-        self.logger.debug(f"[v0] Extracting text from: {pdf_path}")
+        self.logger.debug(f"Extracting text from: {pdf_path}")
         
         try:
             full_text = ""
@@ -45,7 +45,7 @@ class PDFProcessor:
                 reader = PyPDF2.PdfReader(pdf_file)
                 metadata["num_pages"] = len(reader.pages)
                 
-                self.logger.debug(f"[v0] PDF has {metadata['num_pages']} pages")
+                self.logger.debug(f"PDF has {metadata['num_pages']} pages")
                 
                 # Extract text from each page
                 for page_num, page in enumerate(reader.pages):
@@ -53,21 +53,21 @@ class PDFProcessor:
                         text = page.extract_text()
                         full_text += f"\n[PAGE {page_num + 1}]\n{text}"
                     except Exception as e:
-                        self.logger.warning(f"[v0] Error extracting page {page_num + 1}: {str(e)}")
+                        self.logger.warning(f"Error extracting page {page_num + 1}: {str(e)}")
                 
                 # Try to extract metadata
                 if reader.metadata:
-                    self.logger.debug(f"[v0] PDF metadata found: {reader.metadata}")
+                    self.logger.debug(f"PDF metadata found: {reader.metadata}")
                     if reader.metadata.title:
                         metadata["title"] = reader.metadata.title
                     if reader.metadata.author:
                         metadata["authors"] = [reader.metadata.author]
             
-            self.logger.info(f"[v0] Successfully extracted {len(full_text)} characters from PDF")
+            self.logger.info(f"Successfully extracted {len(full_text)} characters from PDF")
             return full_text, metadata
             
         except Exception as e:
-            self.logger.error(f"[v0] Error extracting PDF text: {str(e)}", exc_info=True)
+            self.logger.error(f"Error extracting PDF text: {str(e)}", exc_info=True)
             raise
     
     def identify_sections(self, text: str) -> Dict[str, str]:
@@ -80,7 +80,7 @@ class PDFProcessor:
         Returns:
             Dictionary mapping section names to text
         """
-        self.logger.debug("[v0] Identifying paper sections")
+        self.logger.debug("Identifying paper sections")
         
         sections = {}
         section_keywords = {
@@ -114,7 +114,7 @@ class PDFProcessor:
         
         # Only keep non-empty sections
         sections = {k: v for k, v in section_text.items() if v.strip()}
-        self.logger.info(f"[v0] Identified {len(sections)} sections: {list(sections.keys())}")
+        self.logger.info(f"Identified {len(sections)} sections: {list(sections.keys())}")
         
         return sections
     
@@ -129,13 +129,13 @@ class PDFProcessor:
         Returns:
             List of ChunkData objects
         """
-        self.logger.debug(f"[v0] Chunking text (section: {section_name}, length: {len(text)})")
+        self.logger.debug(f"Chunking text (section: {section_name}, length: {len(text)})")
         
         chunks = []
         words = text.split()
         
         if len(words) < self.min_chunk_length:
-            self.logger.debug(f"[v0] Text too short ({len(words)} words), creating single chunk")
+            self.logger.debug(f"Text too short ({len(words)} words), creating single chunk")
             if text.strip():
                 chunks.append(ChunkData(
                     text=text.strip(),
@@ -166,7 +166,7 @@ class PDFProcessor:
             # Move forward by (chunk_size - overlap) words
             i += self.chunk_size - self.chunk_overlap
         
-        self.logger.info(f"[v0] Created {len(chunks)} chunks from {len(words)} words")
+        self.logger.info(f"Created {len(chunks)} chunks from {len(words)} words")
         return chunks
     
     def process_pdf(self, pdf_path: str) -> Tuple[List[ChunkData], Dict]:
@@ -179,7 +179,7 @@ class PDFProcessor:
         Returns:
             Tuple of (chunks, metadata)
         """
-        self.logger.info(f"[v0] Starting PDF processing for: {pdf_path}")
+        self.logger.info(f"Starting PDF processing for: {pdf_path}")
         
         try:
             # Extract text
@@ -195,10 +195,10 @@ class PDFProcessor:
                 all_chunks.extend(chunks)
             
             metadata["total_chunks"] = len(all_chunks)
-            self.logger.info(f"[v0] PDF processing complete: {len(all_chunks)} total chunks")
+            self.logger.info(f"PDF processing complete: {len(all_chunks)} total chunks")
             
             return all_chunks, metadata
             
         except Exception as e:
-            self.logger.error(f"[v0] PDF processing failed: {str(e)}", exc_info=True)
+            self.logger.error(f"PDF processing failed: {str(e)}", exc_info=True)
             raise

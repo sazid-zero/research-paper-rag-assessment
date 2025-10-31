@@ -11,6 +11,7 @@ from src.services.pdf_processor import PDFProcessor
 from src.services.embedding_service import EmbeddingService
 from src.services.qdrant_client import QdrantVectorClient
 from src.services.rag_pipeline import RAGPipeline
+from src.services.database_service import DatabaseService
 from src.models.schemas import (
     QueryRequest, QueryResponse, Citation, UploadResponse,
     PaperMetadata, PaperInfo, ErrorResponse
@@ -27,15 +28,15 @@ pdf_processor = PDFProcessor()
 embedding_service = EmbeddingService()
 vector_client = QdrantVectorClient()
 rag_pipeline = RAGPipeline()
-
-# Simple in-memory storage for paper metadata (in production use database)
-papers_db: dict = {}
+db_service = DatabaseService()
 
 
 @router.on_event("startup")
 async def startup_event():
     """Startup event"""
-    logger.info("[v0] API routes loaded")
+    logger.info("API routes loaded")
+    from src.services.database_service import init_db
+    init_db()
 
 
 @router.post("/papers/upload", response_model=UploadResponse)
@@ -49,22 +50,22 @@ async def upload_paper(file: UploadFile = File(...)):
     Returns:
         Upload response with paper metadata
     """
-    logger.info(f"[v0] Received paper upload: {file.filename}")
+    logger.info(f"Received paper upload: {file.filename}")
     
     start_time = time.time()
     
     try:
         # Validate file
         if not file.filename.lower().endswith('.pdf'):
-            logger.warning(f"[v0] Invalid file type: {file.filename}")
+            logger.warning(f"Invalid file type: {file.filename}")
             raise HTTPException(status_code=400, detail="Only PDF files are allowed")
         
         # Check file size
         contents = await file.read()
-        file_size_bytes = len(contents)  # Store size in bytes as integer
+        file_size_bytes = len(contents)
         file_size_mb = file_size_bytes / (1024 * 1024)
         if file_size_mb > Config.MAX_PDF_SIZE_MB:
-            logger.warning(f"[v0] File too large: {file_size_mb}MB")
+            logger.warning(f"File too large: {file_size_mb}MB")
             raise HTTPException(status_code=413, detail=f"File too large (max {Config.MAX_PDF_SIZE_MB}MB)")
         
         # Save file
@@ -73,16 +74,16 @@ async def upload_paper(file: UploadFile = File(...)):
         
         with open(file_path, "wb") as f:
             f.write(contents)
-        logger.debug(f"[v0] File saved to: {file_path}")
+        logger.debug(f"File saved to: {file_path}")
         
         # Process PDF
         chunks, metadata = pdf_processor.process_pdf(str(file_path))
-        logger.info(f"[v0] PDF processed: {len(chunks)} chunks created")
+        logger.info(f"PDF processed: {len(chunks)} chunks created")
         
         # Generate embeddings
         texts = [chunk.text for chunk in chunks]
         embeddings = embedding_service.embed_texts(texts)
-        logger.info(f"[v0] Generated {len(embeddings)} embeddings")
+        logger.info(f"Generated {len(embeddings)} embeddings")
         
         # Prepare metadata for storage
         chunk_metadata = []
@@ -97,30 +98,38 @@ async def upload_paper(file: UploadFile = File(...)):
         
         # Store in vector database
         point_ids = vector_client.add_vectors(texts, embeddings, chunk_metadata)
-        logger.info(f"[v0] Stored {len(point_ids)} vectors in Qdrant")
+        logger.info(f"Stored {len(point_ids)} vectors in Qdrant")
         
-        # Store paper metadata
+        # Store paper metadata in database
         paper_metadata = PaperMetadata(
             title=metadata.get("title", file.filename),
             authors=metadata.get("authors", []),
             year=metadata.get("year"),
             file_name=file.filename,
-            file_size=int(file_size_bytes),  # Convert to int (bytes)
+            file_size=int(file_size_bytes),
             num_pages=metadata.get("num_pages", 0),
             total_chunks=len(chunks),
             abstract=metadata.get("abstract")
         )
         
-        papers_db[paper_id] = {
-            "metadata": paper_metadata,
-            "file_path": str(file_path),
-            "point_ids": point_ids
-        }
+        db_service.create_paper(
+            paper_id=paper_id,
+            title=paper_metadata.title,
+            authors=paper_metadata.authors,
+            year=paper_metadata.year,
+            file_name=paper_metadata.file_name,
+            file_size=paper_metadata.file_size,
+            num_pages=paper_metadata.num_pages,
+            total_chunks=paper_metadata.total_chunks,
+            abstract=paper_metadata.abstract,
+            file_path=str(file_path),
+            point_ids=point_ids
+        )
         
-        logger.info(f"[v0] Paper {paper_id} registered successfully")
+        logger.info(f"Paper {paper_id} registered successfully")
         
         elapsed_time = time.time() - start_time
-        logger.info(f"[v0] Upload completed in {elapsed_time:.2f}s")
+        logger.info(f"Upload completed in {elapsed_time:.2f}s")
         
         return UploadResponse(
             paper_id=paper_id,
@@ -132,7 +141,7 @@ async def upload_paper(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[v0] Upload error: {str(e)}", exc_info=True)
+        logger.error(f"Upload error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 
@@ -147,16 +156,19 @@ async def query_papers(request: QueryRequest):
     Returns:
         Query response with answer and citations
     """
-    logger.info(f"[v0] Received query: {request.question[:100]}")
+    logger.info(f"Received query: {request.question[:100]}")
     
     start_time = time.time()
     
     try:
         # Validate paper IDs if provided
         if request.paper_ids:
-            invalid_ids = [pid for pid in request.paper_ids if pid not in papers_db]
+            invalid_ids = []
+            for pid in request.paper_ids:
+                if not db_service.get_paper(pid):
+                    invalid_ids.append(pid)
             if invalid_ids:
-                logger.warning(f"[v0] Invalid paper IDs: {invalid_ids}")
+                logger.warning(f"Invalid paper IDs: {invalid_ids}")
                 raise HTTPException(status_code=404, detail=f"Paper not found: {invalid_ids}")
         
         # Process query through RAG pipeline
@@ -180,7 +192,19 @@ async def query_papers(request: QueryRequest):
         ]
         
         elapsed_time = time.time() - start_time
-        logger.info(f"[v0] Query completed in {elapsed_time:.2f}s")
+        
+        query_id = str(uuid.uuid4())
+        db_service.create_query(
+            query_id=query_id,
+            question=request.question,
+            answer=result["answer"],
+            sources_used=result["sources_used"],
+            confidence=result["confidence"],
+            response_time_ms=elapsed_time * 1000,
+            model_used=Config.LLM_PROVIDER
+        )
+        
+        logger.info(f"Query completed in {elapsed_time:.2f}s")
         
         return QueryResponse(
             answer=result["answer"],
@@ -194,145 +218,164 @@ async def query_papers(request: QueryRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[v0] Query error: {str(e)}", exc_info=True)
+        logger.error(f"Query error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
 
 
 @router.get("/papers", response_model=dict)
 async def list_papers():
     """List all uploaded papers"""
-    logger.debug(f"[v0] Listing papers ({len(papers_db)} total)")
+    logger.debug("Listing papers")
     
     try:
+        papers_list = db_service.get_all_papers()
+        
         papers = [
             {
-                "paper_id": pid,
+                "paper_id": p.paper_id,
                 "metadata": {
-                    "title": p["metadata"].title,
-                    "authors": p["metadata"].authors,
-                    "year": p["metadata"].year,
-                    "file_name": p["metadata"].file_name,
-                    "chunks": p["metadata"].total_chunks
+                    "title": p.title,
+                    "authors": p.authors,
+                    "year": p.year,
+                    "file_name": p.file_name,
+                    "chunks": p.total_chunks,
+                    "upload_date": p.upload_date.isoformat()
                 }
             }
-            for pid, p in papers_db.items()
+            for p in papers_list
         ]
         
         return {
-            "total_papers": len(papers_db),
+            "total_papers": len(papers_list),
             "papers": papers
         }
         
     except Exception as e:
-        logger.error(f"[v0] Error listing papers: {str(e)}", exc_info=True)
+        logger.error(f"Error listing papers: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/papers/{paper_id}", response_model=PaperInfo)
 async def get_paper(paper_id: str):
     """Get paper details"""
-    logger.debug(f"[v0] Getting paper: {paper_id}")
+    logger.debug(f"Getting paper: {paper_id}")
     
-    if paper_id not in papers_db:
-        logger.warning(f"[v0] Paper not found: {paper_id}")
-        raise HTTPException(status_code=404, detail="Paper not found")
-    
-    paper = papers_db[paper_id]
-    return PaperInfo(
-        paper_id=paper_id,
-        metadata=paper["metadata"]
-    )
+    try:
+        paper = db_service.get_paper(paper_id)
+        
+        if not paper:
+            logger.warning(f"Paper not found: {paper_id}")
+            raise HTTPException(status_code=404, detail="Paper not found")
+        
+        return PaperInfo(
+            paper_id=paper_id,
+            metadata=PaperMetadata(
+                title=paper.title,
+                authors=paper.authors,
+                year=paper.year,
+                file_name=paper.file_name,
+                file_size=paper.file_size,
+                num_pages=paper.num_pages,
+                total_chunks=paper.total_chunks,
+                abstract=paper.abstract
+            )
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting paper: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/papers/{paper_id}")
 async def delete_paper(paper_id: str):
     """Delete a paper and its vectors"""
-    logger.info(f"[v0] Deleting paper: {paper_id}")
+    logger.info(f"Deleting paper: {paper_id}")
     
     try:
-        if paper_id not in papers_db:
-            logger.warning(f"[v0] Paper not found: {paper_id}")
+        paper = db_service.get_paper(paper_id)
+        
+        if not paper:
+            logger.warning(f"Paper not found: {paper_id}")
             raise HTTPException(status_code=404, detail="Paper not found")
         
         # Delete from vector database
         vector_client.delete_by_paper_id(paper_id)
         
         # Delete file
-        paper = papers_db[paper_id]
-        file_path = Path(paper["file_path"])
+        file_path = Path(paper.file_path)
         if file_path.exists():
             file_path.unlink()
-            logger.debug(f"[v0] Deleted file: {file_path}")
+            logger.debug(f"Deleted file: {file_path}")
         
-        # Remove from metadata
-        del papers_db[paper_id]
+        db_service.delete_paper(paper_id)
         
-        logger.info(f"[v0] Paper {paper_id} deleted successfully")
+        logger.info(f"Paper {paper_id} deleted successfully")
         
         return {"message": f"Paper {paper_id} deleted successfully"}
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[v0] Delete error: {str(e)}", exc_info=True)
+        logger.error(f"Delete error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/papers/{paper_id}/stats")
 async def get_paper_stats(paper_id: str):
     """Get paper statistics"""
-    logger.debug(f"[v0] Getting stats for paper: {paper_id}")
+    logger.debug(f"Getting stats for paper: {paper_id}")
     
     try:
-        if paper_id not in papers_db:
-            raise HTTPException(status_code=404, detail="Paper not found")
+        paper = db_service.get_paper(paper_id)
         
-        paper = papers_db[paper_id]
-        metadata = paper["metadata"]
+        if not paper:
+            raise HTTPException(status_code=404, detail="Paper not found")
         
         return {
             "paper_id": paper_id,
-            "title": metadata.title,
-            "file_name": metadata.file_name,
-            "total_pages": metadata.num_pages,
-            "total_chunks": metadata.total_chunks,
-            "vector_points": len(paper["point_ids"]),
-            "upload_date": metadata.upload_date.isoformat(),
-            "file_size_mb": metadata.file_size
+            "title": paper.title,
+            "file_name": paper.file_name,
+            "total_pages": paper.num_pages,
+            "total_chunks": paper.total_chunks,
+            "vector_points": len(paper.point_ids),
+            "upload_date": paper.upload_date.isoformat(),
+            "file_size_bytes": paper.file_size
         }
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[v0] Stats error: {str(e)}", exc_info=True)
+        logger.error(f"Stats error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/analytics")
 async def get_analytics():
     """Get system analytics"""
-    logger.debug("[v0] Fetching system analytics")
+    logger.debug("Fetching system analytics")
     
     try:
+        papers_list = db_service.get_all_papers()
         stats = vector_client.get_collection_stats()
         
         return {
-            "total_papers": len(papers_db),
-            "total_chunks": sum(p["metadata"].total_chunks for p in papers_db.values()),
+            "total_papers": len(papers_list),
+            "total_chunks": sum(p.total_chunks for p in papers_list),
             "vector_store_stats": stats,
             "embedding_model": Config.EMBEDDING_MODEL,
             "llm_provider": Config.LLM_PROVIDER
         }
         
     except Exception as e:
-        logger.error(f"[v0] Analytics error: {str(e)}", exc_info=True)
+        logger.error(f"Analytics error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/health")
 async def health_check():
     """Health check endpoint"""
-    logger.debug("[v0] Health check called")
+    logger.debug("Health check called")
     
     return {
         "status": "healthy",

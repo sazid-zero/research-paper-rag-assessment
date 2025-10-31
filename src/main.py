@@ -18,20 +18,20 @@ async def lifespan(app: FastAPI):
     Application lifecycle management
     """
     # Startup
-    logger.info("[v0] === APPLICATION STARTUP ===")
-    logger.info(f"[v0] {Config.APP_NAME} v{Config.APP_VERSION}")
-    logger.info(f"[v0] Debug Mode: {Config.DEBUG}")
-    logger.info(f"[v0] LLM Provider: {Config.LLM_PROVIDER}")
-    logger.info(f"[v0] Embedding Model: {Config.EMBEDDING_MODEL}")
-    logger.info(f"[v0] Qdrant: {Config.QDRANT_HOST}:{Config.QDRANT_PORT}")
-    logger.info("[v0] === STARTUP COMPLETE ===\n")
+    logger.info("=== APPLICATION STARTUP ===")
+    logger.info(f"{Config.APP_NAME} v{Config.APP_VERSION}")
+    logger.info(f"Debug Mode: {Config.DEBUG}")
+    logger.info(f"LLM Provider: {Config.LLM_PROVIDER}")
+    logger.info(f"Embedding Model: {Config.EMBEDDING_MODEL}")
+    logger.info(f"Qdrant: {Config.QDRANT_HOST}:{Config.QDRANT_PORT}")
+    logger.info("=== STARTUP COMPLETE ===\n")
     
     yield
     
     # Shutdown
-    logger.info("\n[v0] === APPLICATION SHUTDOWN ===")
-    logger.info("[v0] Gracefully shutting down...")
-    logger.info("[v0] === SHUTDOWN COMPLETE ===")
+    logger.info("\n=== APPLICATION SHUTDOWN ===")
+    logger.info("Gracefully shutting down...")
+    logger.info("=== SHUTDOWN COMPLETE ===")
 
 
 # Create FastAPI app
@@ -61,7 +61,7 @@ app.include_router(router)
 @app.get("/")
 async def root():
     """Root endpoint"""
-    logger.debug("[v0] Root endpoint accessed")
+    logger.debug("Root endpoint accessed")
     return {
         "message": f"Welcome to {Config.APP_NAME}",
         "version": Config.APP_VERSION,
@@ -72,7 +72,7 @@ async def root():
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
     """Global exception handler"""
-    logger.error(f"[v0] Unhandled exception: {str(exc)}", exc_info=True)
+    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={
@@ -85,7 +85,7 @@ async def general_exception_handler(request, exc):
 if __name__ == "__main__":
     import uvicorn
     
-    logger.info(f"[v0] Starting server on {Config.HOST}:{Config.PORT}")
+    logger.info(f"Starting server on {Config.HOST}:{Config.PORT}")
     
     uvicorn.run(
         "src.main:app",
