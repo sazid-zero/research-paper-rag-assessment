@@ -1,6 +1,6 @@
 #  Research Paper RAG Assistant
 
-A production-ready **Retrieval-Augmented Generation (RAG)** system that helps researchers efficiently query and understand academic papers. Built with modern full-stack technologies for optimal performance and user experience.
+A production-ready **Retrieval-Augmented Generation (RAG)** system that helps researchers efficiently query and understand research papers. Built with modern full-stack technologies for optimal performance and user experience.
 
 ![RAG System Architecture](https://img.shields.io/badge/RAG-System-blue) ![Python](https://img.shields.io/badge/Python-3.10+-green) ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-teal)
 
@@ -11,6 +11,8 @@ A production-ready **Retrieval-Augmented Generation (RAG)** system that helps re
 ![papers Page](./Screenshots/upload.png)
 
 ![query Page](./Screenshots/query.png)
+
+![Response demo](./Screenshots/answer.png)
 
 
 ##  Problem Statement
